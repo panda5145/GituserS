@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Git | User</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+      margin: auto;
+      text-align: center;
+      font-family: arial;
+    }
+
+    .title {
+      color: grey;
+      font-size: 18px;
+    }
+
+    .contact {
+      border: none;
+      outline: 0;
+      display: inline-block;
+      padding: 8px;
+      color: white;
+      background-color: #000;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+    }
+
+    a {
+      text-decoration: none;
+      font-size: 22px;
+      color: black;
+    }
+
+    .contact:hover, a:hover {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Git User</h2>
+  <form class="form-inline">
+    <div class="form-group">
+      <label for="user">User Name:</label>
+      <input type="text" class="form-control" onKeyDown="if(event.keyCode==13) getUserDetail(event);" id="user" placeholder="Enter user name" name="user">
+    </div>
+    
+    <button type="button" onclick="getUserDetail(event)" class="btn btn-default">Find</button>
+  </form>
+
+  <div style="margin-top: 2%;" id="userDetail">
+  </div>
+</div>
+
+
+
+</body>
+
+<script>
+
+  function getUserDetail(e){
+
+    e.preventDefault();
+    var usernName = $("#user").val().trim();
+
+    var content = '<div class="card" style="background-color: transparent; box-shadow: none;"><img style="width: 30%;" alt="Italian Trulli" src="loader3.gif"></div>';
+    $('#userDetail').html(content);
+
+    if(usernName && usernName != ''){
+      $.ajax({
+        url: "https://api.github.com/users/"+usernName,
+        type: "get",
+        success: function(result){
+
+          console.log(result);
+
+          if(!result.message) {
+
+            var formatedDate = result.created_at.split('T');
+            var Date = formatedDate[0].split('-');
+
+            var content = '<div class="card"> ' +
+                    '<img src="'+result.avatar_url+'" alt="John" style="width:100%">' +
+                    '<h1>'+result.name+'</h1>' +
+                    '<p><strong>Created At : </strong>'+Date[2] +'-'+ Date[1] + '-' + Date[0] +'</p>' +
+                    '<p><strong>Total Public Repo : </strong>' + result.public_repos + ' </p>' +
+                    '<p><strong>Total Followers : </strong>' + result.followers  + ' </p>' +
+                    '<p><strong>Total Following : </strong>' + result.following + ' </p>' +
+                    '<p><a style="text-decoration: none; color: #fff;" target="_blank" href="'+result.html_url+'" class="contact">More Info.</a></p>' +
+                    '</div>';
+            setTimeout(function(){
+              $('#userDetail').html(content);
+            }, 2000);
+          }
+        },
+        complete: function(xhr, textStatus) {
+          if(xhr.status != 200){
+            var content = '<div style="height: 150px;" class="card"> <strong style="position: relative; top:40%; font-size: 18px;">No User Found </strong></div>';
+            setTimeout(function(){
+              $('#userDetail').html(content);
+            }, 2000);
+          }
+        }
+      });
+    }
+  }
+
+</script>
+
+</html>
+
